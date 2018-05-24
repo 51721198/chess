@@ -1,6 +1,10 @@
 package com.chess;
 
-import com.chess.game.*;
+import com.chess.game.BaseComputerAi;
+import com.chess.game.ChessBoard;
+import com.chess.game.HumanPlayer;
+import com.chess.game.IChessboard;
+import com.chess.game.IPlayer;
 import com.chess.game.Point;
 import com.chess.ui.CloseActionListener;
 import com.chess.ui.MinActionListener;
@@ -22,7 +26,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -333,17 +336,30 @@ public class GameWindow extends JFrame {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    //这里是播放MP3
                     player.play();
                 }
             }).start(); //异步播放落子音效，否则会阻塞主线程的执行
+
+            //玩家下的时候,这个point是从java swing界面传过来的
+            //run方法第一个参数传递的是对手的盘面
             human.run(aiPlayer.getMyPoints(), point);
             drawPoint(x, y, black);
+
+            //计算玩家是否获胜
             if (checkWin(true)) {
                 return;
             }
+
+            //玩家落子后,就准备让电脑开始落子
+            //由于电脑的落子位置需要先进行计算,所以电脑的run需要根据玩家的盘面进行计算
             aiPlayer.run(human.getMyPoints(), null);
+
+            //到这里,电脑这步需要下的棋子已经计算完毕并且已经添加到了list中
             Point aiPoint = aiPlayer.getMyPoints().get(aiPlayer.getMyPoints().size() - 1);
             drawPoint(aiPoint.getX(), aiPoint.getY(), !black);
+
+            //电脑落子后也需要计算一次胜负
             checkWin(false);
         }
 
