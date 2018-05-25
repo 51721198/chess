@@ -1,7 +1,8 @@
 package com.chess;
 
-import com.chess.game.BaseComputerAi;
+import com.chess.game.AttackComputerAi;
 import com.chess.game.ChessBoard;
+import com.chess.game.DefendComputerAi;
 import com.chess.game.HumanPlayer;
 import com.chess.game.IChessboard;
 import com.chess.game.IPlayer;
@@ -312,7 +313,16 @@ public class GameWindow extends JFrame {
 
         chessBoard = new ChessBoard();
         human = new HumanPlayer();
-        aiPlayer = new BaseComputerAi();
+//        aiPlayer = new BaseComputerAi();
+
+        //低级和中级机器人采用防守
+        if (diff == 0 || diff == 1 ){
+            System.out.println("防守型机器人");
+            aiPlayer = new DefendComputerAi();
+        }else {
+            System.out.println("攻击性机器人");
+            aiPlayer = new AttackComputerAi();
+        }
         human.setChessboard(chessBoard);
         aiPlayer.setChessboard(chessBoard);
 
@@ -353,7 +363,10 @@ public class GameWindow extends JFrame {
 
             //玩家落子后,就准备让电脑开始落子
             //由于电脑的落子位置需要先进行计算,所以电脑的run需要根据玩家的盘面进行计算
+            long start = System.currentTimeMillis();
             aiPlayer.run(human.getMyPoints(), null);
+            long end = System.currentTimeMillis();
+            System.out.println("机器人走棋花费时间: "+ (end-start));
 
             //到这里,电脑这步需要下的棋子已经计算完毕并且已经添加到了list中
             Point aiPoint = aiPlayer.getMyPoints().get(aiPlayer.getMyPoints().size() - 1);
